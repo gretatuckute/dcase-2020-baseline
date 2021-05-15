@@ -62,6 +62,8 @@ class Encoder(Module):
                 layer_input: Tensor) \
             -> Tensor:
         """Does the forward passing for a GRU layer.
+        
+        layer_input is a 3d [batch size, dim, dim]
 
         :param layer: GRU layer for forward passing.
         :type layer: torch.nn.Module
@@ -71,7 +73,7 @@ class Encoder(Module):
         :rtype: torch.Tensor
         """
         b_size, t_steps, _ = layer_input.size()
-        h = layer(layer_input)[0].view(b_size, t_steps, 2, -1)
+        h = layer(layer_input)[0].view(b_size, t_steps, 2, -1) # because there are two dims
         return self.dropout(cat([h[:, :, 0, :], h[:, :, 1, :]], dim=-1))
 
     def forward(self,
@@ -88,7 +90,7 @@ class Encoder(Module):
 
         for a_layer in [self.gru_2, self.gru_3]:
             h_ = self._l_pass(a_layer, h)
-            h = h + h_ if h.size()[-1] == h_.size()[-1] else h_
+            h = h + h_ if h.size()[-1] == h_.size()[-1] else h_ # residual connection
 
         return h
 

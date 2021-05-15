@@ -79,8 +79,14 @@ def load_audio_file(audio_file: str, sr: int, mono: bool,
     :return: The audio data.
     :rtype: numpy.ndarray
     """
-    return load(path=audio_file, sr=sr, mono=mono,
-                offset=offset, duration=duration)[0]
+    
+    from scipy.io import wavfile
+    audio_file = '/Users/gt/Documents/GitHub/dcase-2020-baseline/data/clotho_audio_files/test/stim7_applause.wav'
+    print('wrecked this function')
+    samplerate, data = wavfile.read(audio_file)
+    return data
+    # return load(path=audio_file, sr=sr, mono=mono,
+    #             offset=offset, duration=duration)[0]
 
 
 def load_numpy_object(file_name: Path)\

@@ -7,9 +7,9 @@
 # =================================
 workflow:
   dataset_creation: Yes
-  dnn_training: Yes
+  dnn_training: No
   dnn_evaluation: Yes
-  dnn_testing: No
+  dnn_testing: Yes
 
 # ---------------------------------
 dataset_creation_settings: !include dataset_creation.yaml

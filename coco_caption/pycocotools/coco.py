@@ -56,7 +56,7 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Polygon
 import numpy as np
-from skimage.draw import polygon
+# from skimage.draw import polygon
 import copy
 
 class COCO:

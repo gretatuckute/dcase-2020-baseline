@@ -145,6 +145,8 @@ def module_forward_passing(data: MutableSequence[Tensor],
                            module: Module) \
         -> Tuple[Tensor, Tensor, List[str]]:
     """One forward passing of the module.
+    
+    data is a 3d tuple with 2 tensors and a list of wav strings
 
     Implements one forward passing of the module `module`, using the provided\
     data `data`. Returns the output of the module and the ground truth values.
