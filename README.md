@@ -23,6 +23,11 @@ Clotho data) can also be found
 
 This repository is maintained by [K. Drossos](https://github.com/dr-costas). 
 
+## Extraction of model activations
+Run baseline_dcase.py which loads the pre-trained model and fetches model activations for several audio files. The extraction utils are in extractor_utils.py.
+
+If running a random network: set the randnetw flag in __main__ baseline_dcase.py to True (line 171). This will change filename in extractor_utils.py and load a random state dict (if using stored random indices, use DCASE2020_randnetw_indices.pkl).
+
 ----
 
 ## Table of contents
