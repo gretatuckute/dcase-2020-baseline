@@ -14,12 +14,17 @@ __all__ = ['BaselineDCASE']
 ## ADDED ##
 import numpy as np
 import os
-import librosa
 import torch
 from os.path import join, isfile
 from os import listdir
 from extractor_utils import *
 from scipy.io import wavfile
+
+import random
+np.random.seed(0)
+random.seed(0)
+torch.manual_seed(0)
+torch.cuda.manual_seed(0)
 
 DATADIR = '/Users/gt/Documents/GitHub/aud-dnn/data/stimuli/165_natural_sounds/'
 RESULTDIR = '/Users/gt/Documents/GitHub/aud-dnn/aud_dnn/model-actv/DCASE2020/'
@@ -163,31 +168,55 @@ def load_audio_file(audio_file: str, sr: int, mono: bool,
 
 
 if __name__ == '__main__':
+    randnetw = True
     # default settings
     model = BaselineDCASE(input_dim_encoder=64, hidden_dim_encoder=256, output_dim_encoder=256, dropout_p_encoder=.25,
                           output_dim_h_decoder=256, nb_classes=4367, dropout_p_decoder=.25, max_out_t_steps=22)
+    
+    state_dict = torch.load('dcase_model_baseline_pre_trained.pt')
 
-    model.load_state_dict(torch.load('dcase_model_baseline_pre_trained.pt'))   # map_location=torch.device('cpu'))
+    ## The following code was used to generate indices for random permutation ##
+    # d_rand_idx = {}  # create dict for storing the indices for random permutation
+    # for k, v in state_dict.items():
+    #     w = state_dict[k]
+    #     idx = torch.randperm(w.nelement())  # create random indices across all dimensions
+    #     d_rand_idx[k] = idx
+    #
+    # with open(os.path.join(os.getcwd(), 'DCASE2020_randnetw_indices.pkl'), 'wb') as f:
+    #     pickle.dump(d_rand_idx, f)
+    
+    if randnetw:
+        print('OBS! RANDOM NETWORK!')
+    
+        for k, v in state_dict.items():
+            w = state_dict[k]
+            # Load random indices
+            print(f'________ Loading random indices from permuted architecture for {k} ________')
+            d_rand_idx = pickle.load(open(os.path.join(os.getcwd(), 'DCASE2020_randnetw_indices.pkl'), 'rb'))
+            idx = d_rand_idx[k]
+            rand_w = w.view(-1)[idx].view(w.size()) # permute, and reshape back to original shape
+            state_dict[k] = rand_w
+    
+    model.load_state_dict(state_dict)   # map_location=torch.device('cpu'))
     model.eval()
-
-    # write hooks for the model
-    save_output = SaveOutput(avg_type='avg')
-
-    hook_handles = []
-    layer_names = []
-    for idx, layer in enumerate(model.modules()):
-        layer_names.append(layer)
-        if isinstance(layer, torch.nn.GRU):
-            print('Fetching GRU handles!\n')
-            handle = layer.register_forward_hook(save_output)  # save idx and layer
-            hook_handles.append(handle)
-        if type(layer) == torch.nn.modules.Linear:
-            print('Fetching ReLu handles!\n')
-            handle = layer.register_forward_hook(save_output)  # save idx and layer
-            hook_handles.append(handle)
-
-
+    
     for file in wav_files:
+        # write hooks for the model
+        save_output = SaveOutput(avg_type='avg', randnetw=randnetw)
+        
+        hook_handles = []
+        layer_names = []
+        for idx, layer in enumerate(model.modules()):
+            layer_names.append(layer)
+            if isinstance(layer, torch.nn.GRU):
+                print('Fetching GRU handles!\n')
+                handle = layer.register_forward_hook(save_output)  # save idx and layer
+                hook_handles.append(handle)
+            if type(layer) == torch.nn.modules.Linear:
+                print('Fetching ReLu handles!\n')
+                handle = layer.register_forward_hook(save_output)  # save idx and layer
+                hook_handles.append(handle)
+        
         samplerate, data = wavfile.read(join(DATADIR, file))
     
         feats = feature_extraction(data, sr=44100,

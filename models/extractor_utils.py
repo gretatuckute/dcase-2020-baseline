@@ -8,11 +8,12 @@ from pathlib import Path
 import os
 
 class SaveOutput:
-	def __init__(self, avg_type='avg'):
+	def __init__(self, avg_type='avg', randnetw=False):
 		self.outputs = []
 		self.activations = {}  # create a dict with module name
 		self.detached_activations = None
 		self.avg_type = avg_type
+		self.randnetw = randnetw
 	
 	def __call__(self, module, module_in, module_out):
 		"""
@@ -72,7 +73,7 @@ class SaveOutput:
 		detached_activations = {}
 		
 		for k, v in self.activations.items():
-			# print(f'Shape {k}: {v.detach().numpy().shape}')
+			# print(f'Shape {k}: {v[0].detach().numpy().shape}')
 			print(f'Detaching activation for layer: {k}')
 			if self.avg_type == 'avg_power':
 				activations = activations ** 2
@@ -93,7 +94,7 @@ class SaveOutput:
 				avg_activations_batch = avg_activations_batch.mean(0)
 				
 				detached_activations[f'{k}--hidden'] = avg_activations_hidden
-				detached_activations[f'{k}--batch'] = avg_activations_batch
+				# detached_activations[f'{k}--batch'] = avg_activations_batch
 			
 			if k.startswith('Linear'):
 				activations = v.detach().numpy().squeeze()
@@ -109,10 +110,11 @@ class SaveOutput:
 		
 		if not (Path(RESULTDIR)).exists():
 			os.makedirs((Path(RESULTDIR)))
-			
-		filename = os.path.join(RESULTDIR, f'{identifier}_activations.pkl')
-		# filename = os.path.join(RESULTDIR, f'{identifier}_activations_randnetw.pkl')
-		# filename = os.path.join(RESULTDIR, f'{identifier}_{self.avg_type}_activations.pkl')
+		
+		if self.randnetw:
+			filename = os.path.join(RESULTDIR, f'{identifier}_activations_randnetw.pkl')
+		else:
+			filename = os.path.join(RESULTDIR, f'{identifier}_activations.pkl')
 		
 		with open(filename, 'wb') as f:
 			pickle.dump(self.detached_activations, f)
