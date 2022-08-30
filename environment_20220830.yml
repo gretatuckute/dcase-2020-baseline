@@ -1,0 +1,45 @@
+name: dcase
+channels:
+  - defaults
+dependencies:
+  - ca-certificates=2021.4.13=hecd8cb5_1
+  - certifi=2020.12.5=py37hecd8cb5_0
+  - libcxx=10.0.0=1
+  - libffi=3.3=hb1e8313_2
+  - ncurses=6.2=h0a44026_1
+  - openssl=1.1.1k=h9ed2024_0
+  - pip=21.0.1=py37hecd8cb5_0
+  - python=3.7.10=h88f2d9e_0
+  - readline=8.1=h9ed2024_0
+  - setuptools=52.0.0=py37hecd8cb5_0
+  - sqlite=3.35.4=hce871da_0
+  - tk=8.6.10=hb0a8c7a_0
+  - wheel=0.36.2=pyhd3eb1b0_0
+  - xz=5.2.5=h1de35cc_0
+  - zlib=1.2.11=h1de35cc_3
+  - pip:
+    - audioread==2.1.9
+    - cffi==1.14.5
+    - cycler==0.10.0
+    - decorator==5.0.7
+    - ffmpeg==1.4
+    - joblib==1.0.1
+    - kiwisolver==1.3.1
+    - librosa==0.7.1
+    - llvmlite==0.36.0
+    - loguru==0.3.2
+    - matplotlib==3.4.1
+    - numba==0.53.1
+    - numpy==1.17.4
+    - pillow==8.2.0
+    - pycparser==2.20
+    - pyparsing==2.4.7
+    - python-dateutil==2.8.1
+    - pyyaml==5.1.2
+    - resampy==0.2.2
+    - scikit-learn==0.24.2
+    - scipy==1.6.3
+    - six==1.15.0
+    - soundfile==0.10.3.post1
+    - threadpoolctl==2.1.0
+    - torch==1.3.1
