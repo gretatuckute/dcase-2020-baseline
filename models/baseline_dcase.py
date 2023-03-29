@@ -172,7 +172,7 @@ def load_audio_file(audio_file: str, sr: int, mono: bool,
 
 
 if __name__ == '__main__':
-    randnetw = False
+    randnetw = True
     # default settings
     model = BaselineDCASE(input_dim_encoder=64, hidden_dim_encoder=256, output_dim_encoder=256, dropout_p_encoder=.25,
                           output_dim_h_decoder=256, nb_classes=4367, dropout_p_decoder=.25, max_out_t_steps=22)
