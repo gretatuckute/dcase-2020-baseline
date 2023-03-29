@@ -4,6 +4,9 @@
 from torch.nn import Module
 from torch import Tensor
 
+# add path above to import modules
+import sys
+sys.path.append('..')
 from modules import Encoder
 from modules import Decoder
 
@@ -176,19 +179,23 @@ if __name__ == '__main__':
     
     state_dict = torch.load('dcase_model_baseline_pre_trained.pt')
 
-    ## The following code was used to generate indices for random permutation ##
-    # d_rand_idx = {}  # create dict for storing the indices for random permutation
-    # for k, v in state_dict.items():
-    #     w = state_dict[k]
-    #     idx = torch.randperm(w.nelement())  # create random indices across all dimensions
-    #     d_rand_idx[k] = idx
-    #
-    # with open(os.path.join(os.getcwd(), 'DCASE2020_randnetw_indices.pkl'), 'wb') as f:
-    #     pickle.dump(d_rand_idx, f)
-    
     if randnetw:
         print('OBS! RANDOM NETWORK!')
-    
+
+        ## The following code was used to generate indices for random permutation ##
+        if not os.path.exists(os.path.join(os.getcwd(), 'DCASE2020_randnetw_indices.pkl')):
+            d_rand_idx = {}  # create dict for storing the indices for random permutation
+            for k, v in state_dict.items():
+                w = state_dict[k]
+                idx = torch.randperm(w.nelement())  # create random indices across all dimensions
+                d_rand_idx[k] = idx
+
+            with open(os.path.join(os.getcwd(), 'DCASE2020_randnetw_indices.pkl'), 'wb') as f:
+                pickle.dump(d_rand_idx, f)
+
+        else:
+            d_rand_idx = pickle.load(open(os.path.join(os.getcwd(), 'DCASE2020_randnetw_indices.pkl'), 'rb'))
+
         for k, v in state_dict.items():
             w = state_dict[k]
             # Load random indices
